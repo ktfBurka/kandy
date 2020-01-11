@@ -15,7 +15,7 @@ const app = express()
 
 app.use(bodyParser.json());
 
-app.get('/:id=null', (req, res) => {
+app.get('/:id?', (req, res) => {
     let query: any = {};
     if(req.params.id){
         query.id = +req.params.id;
