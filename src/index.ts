@@ -2,57 +2,43 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const MongoClient = require('mongodb').MongoClient;
 
-const app = express();
+let db;
 
-MongoClient.co
+MongoClient.connect("mongodb://admin:Password1@ds259361.mlab.com:59361/kandy",
+    (err, database) => {
+        db = database.db('kandy');
 
-const data = [
-    {
-        id: 1,
-        msg: 'Message1',
-        date: new Date(),
-    },
-    {
-        id: 2,
-        msg: 'Message2',
-        date: new Date(),
-    },
-    {
-        id: 3,
-        msg: 'Message3',
-        date: new Date(),
-    },
-    {
-        id: 4,
-        msg: 'Message3',
-        date: new Date(),
-    }
-]
+        
+    })
+
+const app = express()
 
 app.use(bodyParser.json());
 
-app.get('/', (req, res) => {
-    res.json(data);
+app.get('/:id', (req, res) => {
+    let query: any = {};
+    if(req.params.id){
+        query.id = req.params.id;
+    }
+    db.collection('posts').find(query);
 });
 
 app.post('/', (req, res) => {
-    data.push(req.body);
-    res.json(data[data.length - 1]);
+    db.collection('posts').save(req.body, (err, result) => {
+        if (err) return console.log(err)
+    
+        console.log('saved to database')
+        res.redirect('/')
+      })
 });
 
 app.delete('/:id', (req, res) => {
-    let index = -1;
-    console.log(req.params);
-    for (let i = 0; i < data.length; i++) {
-        if (data[i].id == req.params.id) {
-            index = i;
-        }
-    }
-    data.splice(index, 1);
-    res.json(data);
+    res.json({
+        msg: "Hello"
+    })
 });
 
-const port =  4000;
+const port = 4000;
 
 app.listen(port, () => {
     console.log(`listening on ${port}`);
