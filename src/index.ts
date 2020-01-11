@@ -15,12 +15,18 @@ const app = express()
 
 app.use(bodyParser.json());
 
-app.get('/:id', (req, res) => {
+app.get('/:id=null', (req, res) => {
     let query: any = {};
     if(req.params.id){
-        query.id = req.params.id;
+        query.id = +req.params.id;
     }
-    db.collection('posts').find(query);
+    db.collection('posts').find(query).toArray( (err,result) => {
+        if(err){
+            return console.log(err);
+        }
+        res.json(result);
+    })
+    
 });
 
 app.post('/', (req, res) => {
